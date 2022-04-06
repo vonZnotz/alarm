@@ -1,0 +1,31 @@
+#!/bin/sh
+
+cd "$(dirname "$0")"
+
+SOUND1=mixkit-clock-countdown-bleeps-916.wav
+#SOUND1=mixkit-security-facility-breach-alarm-994.wav
+OUTPUT_INTERVAL=30
+
+SECONDS=$1;
+
+MINUTES_INDICATOR=`echo $1|grep M|wc -l`
+if [ $MINUTES_INDICATOR -eq 1 ]
+then
+	INSERT=`echo $1|cut -d'M' -f 1`	
+	SECONDS=`expr $INSERT \* 60`
+fi
+
+X=0
+while [ $X -lt $SECONDS ]
+do
+	LEFT=$(python -c "print(($SECONDS-$X)/60.0)")
+	echo $LEFT minutes left
+	guake --rename-tab "ALARM - ${LEFT}M"
+	sleep $OUTPUT_INTERVAL;
+	X=`expr $X + $OUTPUT_INTERVAL`
+done
+
+echo STOP IT!
+
+play ${SOUND1} -q -t alsa
+
